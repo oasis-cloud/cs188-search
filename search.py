@@ -86,19 +86,74 @@ def depthFirstSearch(problem: SearchProblem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    print(problem)
-    util.raiseNotDefined()
+
+    stack = util.Stack()
+    visited = set()
+
+    stack.push((problem.getStartState(), []))
+
+    while(not stack.isEmpty()):
+        state, path = stack.pop()
+        if(problem.isGoalState(state)):
+            return path
+        visited.add(state)
+
+        successor = problem.getSuccessors(state)
+
+        for state,nextpath,cost in reversed(successor):
+            if(state in visited):
+                continue
+            stack.push((state, path + [nextpath]))
+
+    return []
 
 def breadthFirstSearch(problem: SearchProblem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = util.Queue()
+    # 由于出队的操作，访问 C 后，C 出队了。当再次遇到 C 的时候，扩展 C 的话，这时并不是最短路径
+    visited = set()
+    # 记录已经进入队列的数据，之所以这样做，是因为广度优先只要进入队列就已经是最短路径了
+    inQueue = set()
+
+    queue.push((problem.getStartState(), []))
+
+    while(not queue.isEmpty()):
+        state, path = queue.pop()
+        if(problem.isGoalState(state)):
+            return path
+
+        visited.add(state)
+
+        successor = problem.getSuccessors(state)
+        for state,nextpath,cost in successor:
+            if(state in visited or state in inQueue):
+                continue
+            queue.push((state, path + [nextpath]))
+            inQueue.add(state)
+
+    return []
 
 def uniformCostSearch(problem: SearchProblem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = util.PriorityQueue()
+    visited = set()
+
+    startState = problem.getStartState()
+    queue.push((startState,[], 0), 0)
+
+    while(not queue.isEmpty()):
+        current_state, current_path, current_cost = queue.pop()
+        if(problem.isGoalState(current_state)):
+            return current_path
+        if(current_state in visited):
+            continue
+
+        visited.add(current_state)
+
+        successors = problem.getSuccessors(current_state)
+        for state, action, cost in successors:
+            next_cost = cost + current_cost
+            queue.push((state, current_path + [action], next_cost), next_cost)
+
+    return []
 
 def nullHeuristic(state, problem=None):
     """
