@@ -383,7 +383,24 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    # 计算曼哈顿距离
+    def manhattan(position, goal):
+        "The Manhattan distance heuristic for a PositionSearchProblem"
+        xy1 = position
+        xy2 = goal
+        return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
+    position, visitedState = state
+    dist = []
+    # 计算 PacMan 到四个角落的曼哈顿距离，之后只取四个角中最大的曼哈顿距离
+    for index, corner in enumerate(corners):
+        d = manhattan(position, corner)
+        if visitedState[index]:
+            continue
+        dist.append(d)
+    if not dist:
+        return 0
+    return max(dist)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

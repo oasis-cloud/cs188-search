@@ -156,16 +156,18 @@ def uniformCostSearch(problem: SearchProblem):
     return []
 
 def nullHeuristic(state, problem=None):
-    s, a, c = state
-    return c + problem.getCostOfActions(a)
+    return 0
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     # fn = g(n) + h(n)
     # g(n) 从根开始到当前节点的 cost 总和
     # h(n) 是选择某个 action 的代价估算
     # 在统一代价搜索的基础上增加了 h(n)
-    h = lambda s: nullHeuristic(s, problem)
-    queue = util.PriorityQueueWithFunction(h)
+    def priority(item):
+        state, path, cost = item
+        return cost + heuristic(state, problem)
+
+    queue = util.PriorityQueueWithFunction(priority)
     visited = set()
 
     start_state = problem.getStartState()
