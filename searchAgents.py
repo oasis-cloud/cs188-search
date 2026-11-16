@@ -296,14 +296,22 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # 通过 list 表示四个角落访问的状态。PacMan 每次行动的时候，主要看 PacMan 的位置和后续 四个角落的 状态。
+        cornersVisited = [False, False, False, False]
+        for i, c in enumerate(self.corners):
+            if self.startingPosition == c:
+                cornersVisited[i] = True
+        return (self.startingPosition, tuple(cornersVisited))
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # 如果四个角落都访问过，则返回 True
+        # 我们并不关心访问的顺序
+        position, cornersVisited = state
+        return all(cornersVisited)
 
     def getSuccessors(self, state: Any):
         """
@@ -315,7 +323,6 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -326,6 +333,21 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            # 计算是否和墙体碰撞
+            (x,y),cornersVisited= state
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+            if hitsWall:
+                continue
+
+            # 计算下一个位置和四个角落访问状态
+            nextPosition = (nextx, nexty)
+            nextCorners = list(cornersVisited)  # 拷贝，避免共享
+            if nextPosition in self.corners:
+                nextCorners[self.corners.index(nextPosition)] = True
+            nextState = (nextPosition, tuple(nextCorners))
+            successors.append((nextState, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
