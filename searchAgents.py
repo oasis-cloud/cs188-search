@@ -494,7 +494,19 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    # 先判断 problem.heuristicInfo 是否存了食物的位置信息
+    # 获取所有食物的位置信息，计算曼哈顿距离
+    # 当前还剩哪些食物（坐标列表）
+    foodPositions = foodGrid.asList()
+    if not foodPositions:
+        return 0
+
+    dists = []
+    for foodPosition in foodPositions:
+        d = abs(position[0] - foodPosition[0]) + abs(position[1] - foodPosition[1])
+        dists.append(d)
+    # 这里采用 max 是因为 h 是到达目标状态最底线。可以用一个目标节点的情况进行对比，h 是到达目标集的最大曼哈顿距离
+    return max(dists) 
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
